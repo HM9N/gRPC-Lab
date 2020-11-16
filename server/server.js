@@ -18,32 +18,23 @@ const proto = grpc.loadPackageDefinition(
   )
 );
 
-function eligibleForLeave(call, callback) {
-
-  const requestedDays = call.request.requested_leave_days;
-  const availableDays = call.request.accrued_leave_days;
-
-  console.log("on eligibleForLeave fn");
-
-  if (requestedDays > 0) {
-    if (availableDays > requestedDays) {
-      callback(null, { eligible: true });
-    } else {
-      callback(null, { eligible: false });
-    }
-    -1;
-  } else {
-    callback(new Error("Invalid requested days"));
-  }
-}
 /**
    Grant an employee leave days
    */
 function grantLeave(call, callback) {
-  console.log("on ... grantLeave fn");
-
+  
   const requestedDays = call.request.requested_leave_days;
   const availableDays = call.request.accrued_leave_days;
+
+  if(requestedDays <= 0){
+    callback(new Error("Has solicitado un número inválido de dias"));
+    return;
+  }
+
+  if(availableDays <= 0){
+    callback(new Error("No tienes dias válidos acumulados"));
+    return;
+  }
 
   const granted = availableDays >= requestedDays;
 
@@ -58,7 +49,6 @@ function grantLeave(call, callback) {
 
 // Add the implemented methods to the service.
 server.addService(proto.work_leave.EmployeeLeaveDaysService.service, {
-  EligibleForLeave: eligibleForLeave,
   grantLeave: grantLeave,
 });
 

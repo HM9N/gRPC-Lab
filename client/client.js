@@ -34,7 +34,6 @@ const userData = {
 
 identifyUserData();
 
-
 /**
  * Collect information to build request data
  */
@@ -92,7 +91,17 @@ async function identifyUserData() {
   createRequest(userData);
 }
 
-
+function aksRequestBody() {
+  reader.question("¿Quieres hacer otra consulta? [si, no]", (answer) => {
+    const answerUpper = answer.toUpperCase().trim();
+    if (answerUpper === "SI") {
+      identifyUserData();
+    } else if (answerUpper === "NO") {
+      console.log("bye...");
+      process.exit();
+    }
+  });
+}
 
 /**
  * Calls the gRPC method
@@ -103,19 +112,11 @@ function createRequest(requestData) {
   client.grantLeave(requestData, null, (err, res) => {
     if (err) {
       console.log(err);
+      aksRequestBody();
       return;
     }
     console.log("RESPUESTA <== ", JSON.stringify(res));
-
-    reader.question("¿Quieres hacer otra consulta? [si, no]", (answer) => {
-      const answerUpper = answer.toUpperCase().trim();
-      if (answerUpper === "SI") {
-        identifyUserData();
-      } else if (answerUpper === "NO") {
-        console.log("bye...");
-      }
-    });
+    aksRequestBody();
 
   });
-
 }
