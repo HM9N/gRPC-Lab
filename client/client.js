@@ -43,7 +43,7 @@ async function identifyUserData() {
   // Ask the id
   const idQuestion = () => {
     return new Promise((resolve, reject) => {
-      reader.question("¿Cuál es tu cédula? ", (answer) => {
+      reader.question("¿Cuál es tu cédula? \n R: ", (answer) => {
         userData.employee_id = parseInt(answer);
         resolve();
       });
@@ -53,7 +53,7 @@ async function identifyUserData() {
   // Ask the name
   const nameQuestion = () => {
     return new Promise((resolve, reject) => {
-      reader.question("¿Cuál es tu nombre? ", (answer) => {
+      reader.question("¿Cuál es tu nombre? \n R: ", (answer) => {
         userData.name = answer;
         resolve();
       });
@@ -64,7 +64,7 @@ async function identifyUserData() {
   const accuredDays = () => {
     return new Promise((resolve, reject) => {
       reader.question(
-        "¿Cuanto dias de permiso tienes disponibles? ",
+        "¿Cuanto dias de permiso tienes disponibles?\n R: ",
         (answer) => {
           userData.accrued_leave_days = parseFloat(answer);
           resolve();
@@ -76,7 +76,7 @@ async function identifyUserData() {
   // Ask the resuested days
   const resuestedDays = () => {
     return new Promise((resolve, reject) => {
-      reader.question("¿Cuanto dias de permiso necesitas? ", (answer) => {
+      reader.question("¿Cuanto dias de permiso necesitas?\n R: ", (answer) => {
         userData.requested_leave_days = parseFloat(answer);
         resolve();
       });
@@ -92,7 +92,7 @@ async function identifyUserData() {
 }
 
 function aksRequestBody() {
-  reader.question("¿Quieres hacer otra consulta? [si, no]", (answer) => {
+  reader.question("¿Quieres hacer otra consulta? [si, no]\n R: ", (answer) => {
     const answerUpper = answer.toUpperCase().trim();
     if (answerUpper === "SI") {
       identifyUserData();
