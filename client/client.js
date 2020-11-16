@@ -11,36 +11,19 @@ const reader = readline.createInterface({
 
 //Load the protobuf
 let proto = grpc.loadPackageDefinition(
-  protoLoader.loadSync(
-    __dirname + "/proto/vacaciones.proto",
-    {
-      keepCase: true,
-      longs: String,
-      enums: String,
-      defaults: true,
-      oneofs: true,
-    }
-  )
+  protoLoader.loadSync(__dirname + "/proto/vacaciones.proto", {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  })
 );
-
-let username;
-
-// Create gRPC client
-// let client = new proto.chatGroup.Chat(
-//     REMOTE_SERVER,
-//     grpc.credentials.createInsecure()
-// );
 
 let client = new proto.work_leave.EmployeeLeaveDaysService(
   REMOTE_SERVER,
   grpc.credentials.createInsecure()
 );
-
-// Ask the user to enter name.
-// reader.question("Please enter your name: ", (answer) => {
-//     username = answer;
-//     startChat();
-// });
 
 const userData = {
   employee_id: null,
@@ -51,6 +34,10 @@ const userData = {
 
 identifyUserData();
 
+
+/**
+ * Collect information to build request data
+ */
 async function identifyUserData() {
   console.log("#################################");
 
@@ -105,14 +92,20 @@ async function identifyUserData() {
   createRequest(userData);
 }
 
-function createRequest(requestData) {
 
-  const requestRef = client.grantLeave(requestData, null, (err, res) => {
+
+/**
+ * Calls the gRPC method
+ * @param {*} requestData Employee object in proto schema
+ */
+function createRequest(requestData) {
+  console.log("REQUEST  ==> ", JSON.stringify(requestData));
+  client.grantLeave(requestData, null, (err, res) => {
     if (err) {
       console.log(err);
       return;
     }
-    console.log("RESPUESTA ==> ", JSON.stringify(res));
+    console.log("RESPUESTA <== ", JSON.stringify(res));
 
     reader.question("¿Quieres hacer otra consulta? [si, no]", (answer) => {
       const answerUpper = answer.toUpperCase().trim();
@@ -126,25 +119,3 @@ function createRequest(requestData) {
   });
 
 }
-
-//Start the stream between server and client
-let startChat = () => {
-  // Join the chat service
-  let channel = client.join();
-
-  // Write the request
-  channel.write({ user: username, text: "I am joined the conversation..." });
-
-  // get the data from response
-  channel.on("data", (message) => {
-    if (message.user == username) {
-      return;
-    }
-    console.log(`${message.user}: ${message.text}`);
-  });
-
-  // Read the line from terminal
-  reader.on("line", (text) => {
-    channel.write({ user: username, text: text });
-  });
-};
